@@ -45,7 +45,7 @@ Quebec stands out with a **4.0/5 score** due to unique French language complianc
 
 ## 🚀 Live Demo
 
-[View the Interactive Map](https://your-username.github.io/skill-gaming-map/)
+[View the Interactive Map](https://danvid1009.github.io/skill-gaming-map/)
 
 ---
 
