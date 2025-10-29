@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>North American Skill Gaming Regulatory Map</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/topojson@3"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .map-container {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .state, .province {
+            stroke: #fff;
+            stroke-width: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .state:hover, .province:hover {
+            stroke: #333;
+            stroke-width: 2px;
+            opacity: 0.8;
+        }
+        
+        .tooltip {
+            position: absolute;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            border-radius: 6px;
+            pointer-events: none;
+            font-size: 12px;
+            max-width: 300px;
+            line-height: 1.4;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+        
+        .tooltip::before {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 8px solid transparent;
+        }
+        
+        .tooltip.position-top::before {
+            bottom: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-top-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .tooltip.position-bottom::before {
+            top: -16px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .tooltip.position-left::before {
+            right: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .tooltip.position-right::before {
+            left: -16px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-right-color: rgba(0, 0, 0, 0.9);
+        }
+        
+        .tooltip h3 {
+            margin: 0 0 8px 0;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .tooltip .score {
+            font-weight: bold;
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        
+        .legend {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .legend h4 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .legend-scale {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .legend-gradient {
+            width: 150px;
+            height: 15px;
+            background: linear-gradient(to right, #d73027, #f46d43, #fdae61, #fee08b, #e6f598, #abdda4, #66c2a5, #3288bd, #5e4fa2);
+            border: 1px solid #ccc;
+            margin-right: 10px;
+        }
+        
+        .legend-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 150px;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .info-panel {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .info-panel h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .zoom-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .zoom-btn {
+            width: 35px;
+            height: 35px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+        
+        .zoom-btn:hover {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .loading {
+            text-align: center;
+            font-size: 18px;
+            color: #666;
+            padding: 50px;
+        }
+        
+        .header-logo {
+            display: block;
+            margin: 0 auto 20px auto;
+            max-height: 80px;
+            max-width: 300px;
+            height: auto;
+            width: auto;
+        }
+        
+        .bottom-right-logo {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            max-height: 60px;
+            max-width: 120px;
+            height: auto;
+            width: auto;
+            opacity: 0.9;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+        
+        .bottom-right-logo:hover {
+            opacity: 1;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="GNAR_logo.jpg" alt="GNAR" class="header-logo">
+        <h1>North American Skill Gaming Regulatory Map</h1>
+        <p class="subtitle">Interactive map showing skill gaming regulations across US states and Canadian provinces</p>
+        
+        <div class="map-container">
+            <div id="map"></div>
+            <div class="tooltip" id="tooltip" style="display: none;"></div>
+            <div class="zoom-controls">
+                <div class="zoom-btn" id="zoom-in">+</div>
+                <div class="zoom-btn" id="zoom-out">−</div>
+                <div class="zoom-btn" id="zoom-reset" style="font-size: 12px;">⌂</div>
+            </div>
+            <div class="legend">
+                <h4>Capacity Score (0-5)</h4>
+                <div class="legend-scale">
+                    <div class="legend-gradient"></div>
+                    <span style="font-size: 10px; color: #666;">Score</span>
+                </div>
+                <div class="legend-labels">
+                    <span>0</span>
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>4</span>
+                    <span>5</span>
+                </div>
+                <div style="margin-top: 10px; font-size: 11px; color: #666;">
+                    <div>🔴 Red: Not allowed</div>
+                    <div>🔵 Blue: Fully allowed</div>
+                </div>
+            </div>
+            <img src="gnarcadia_logo.png" alt="Gnarcadia" class="bottom-right-logo" title="Gnarcadia - Skill Gaming Platform">
+        </div>
+        
+        <div class="info-panel">
+            <h3>How to Use This Map</h3>
+            <p><strong>Hover</strong> over any state or province to see detailed skill gaming information including capacity score, permitted types, and important regulatory notes.</p>
+            <p><strong>Zoom & Pan:</strong> Use mouse wheel to zoom, click and drag to pan, or use the +/− buttons. Click ⌂ to reset view.</p>
+            <p><strong>Color coding:</strong> Red indicates restrictions (score 0), progressing through yellow/green to blue for most permissive (score 5).</p>
+        </div>
+    </div>
+
+    <script>
+        // Skill gaming data from CSV
+        const skillGamingData = {
+            "Alberta": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "British Columbia": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Manitoba": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "New Brunswick": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Newfoundland and Labrador": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Nova Scotia": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Ontario": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Prince Edward Island": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Quebec": {score: 4.0, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "Pure-skill allowed. Distinct requirements: French-language obligations for websites, UX, customer service, ads; stronger enforcement (Bill 96/Law 14). Québec repealed publicity‑contest registration regime (effective Oct 27, 2023), reducing contest admin, but language/consumer rules still apply."},
+            "Saskatchewan": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Northwest Territories": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Nunavut": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "Yukon": {score: 4.5, allowed: "Yes (pure-skill contests)", types: "Pure-skill only; no internal RNG", precedent: "yes", notes: "In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."},
+            "District of Columbia": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Not listed as restricted by major operators; follow general consumer and skill-proof standards."},
+            "Alabama": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Alaska": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Arizona": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG; some tourney formats limited", precedent: "partial", notes: "No Mega Events or FPUE tournaments (operator policy)."},
+            "Arkansas": {score: 0.0, allowed: "No (cash skill tourneys blocked online/mobile)", types: "N/A", precedent: "no", notes: "Flagged as restricted by major operators for online/mobile cash skill tournaments."},
+            "California": {score: 3.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "DFS/picks opinions create caution for sports formats; non‑sports pure‑skill contests generally separated from gambling statutes. Avoid DFS-like offerings."},
+            "Colorado": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Connecticut": {score: 0.0, allowed: "No (cash skill tourneys blocked online/mobile)", types: "N/A", precedent: "no", notes: "Flagged as restricted by major operators for online/mobile cash skill tournaments."},
+            "Delaware": {score: 0.0, allowed: "No (cash skill tourneys blocked online/mobile)", types: "N/A", precedent: "no", notes: "Flagged as restricted by major operators for online/mobile cash skill tournaments."},
+            "Florida": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG; some tourney formats limited", precedent: "partial", notes: "No Mega Events or FPUE tournaments (operator policy)."},
+            "Georgia": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Hawaii": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Idaho": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Illinois": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Indiana": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG; no card/tiles cash", precedent: "partial", notes: "Cash play not available for card-style games (operator policy)."},
+            "Iowa": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Kansas": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Kentucky": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Louisiana": {score: 0.0, allowed: "No (cash skill tourneys blocked online/mobile)", types: "N/A", precedent: "no", notes: "Flagged as restricted by major operators for online/mobile cash skill tournaments."},
+            "Maine": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG; no card/tiles cash", precedent: "partial", notes: "Cash play not available for card-style games (operator policy)."},
+            "Maryland": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Massachusetts": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Michigan": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Minnesota": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Mississippi": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Missouri": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Montana": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Nebraska": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Nevada": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "New Hampshire": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "New Jersey": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG; no dominoes cash", precedent: "partial", notes: "Cash dominoes not available (operator policy)."},
+            "New Mexico": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "New York": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "North Carolina": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "North Dakota": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Ohio": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Oklahoma": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Oregon": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Pennsylvania": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Rhode Island": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "South Carolina": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "South Dakota": {score: 0.0, allowed: "No (cash skill tourneys blocked online/mobile)", types: "N/A", precedent: "no", notes: "Flagged as restricted by major operators for online/mobile cash skill tournaments."},
+            "Tennessee": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Texas": {score: 3.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "DFS/picks opinions create caution for sports formats; non‑sports pure‑skill contests generally separated from gambling statutes. Avoid DFS-like offerings."},
+            "Utah": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Vermont": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Virginia": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Washington": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "West Virginia": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Wisconsin": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."},
+            "Wyoming": {score: 4.0, allowed: "Yes (pure-skill cash contests)", types: "H2H & tournaments; no chance/RNG", precedent: "yes", notes: "Ensure games are demonstrably skill-predominant; remove internal chance."}
+        };
+
+        // Color scale function
+        function getColor(score) {
+            const colorScale = d3.scaleSequential(d3.interpolateRdYlBu)
+                .domain([0, 5]);
+            return colorScale(score);
+        }
+
+        // Create map
+        function createMap() {
+            const width = 960;
+            const height = 600;
+
+            const svg = d3.select("#map")
+                .append("svg")
+                .attr("width", "100%")
+                .attr("height", "100%")
+                .attr("viewBox", `0 0 ${width} ${height}`)
+                .style("background", "#f0f8ff");
+
+            // Add zoom functionality
+            const zoom = d3.zoom()
+                .scaleExtent([0.5, 8])
+                .on("zoom", function(event) {
+                    mapGroup.attr("transform", event.transform);
+                });
+
+            svg.call(zoom);
+
+            // Create group for all map elements (so they zoom together)
+            const mapGroup = svg.append("g");
+
+            const tooltip = d3.select("#tooltip");
+
+            // North America projection that includes both US and Canada
+            const projection = d3.geoAlbers()
+                .center([0, 54])
+                .rotate([106, 0])
+                .scale(650)
+                .translate([width / 2, height / 2]);
+
+            const path = d3.geoPath().projection(projection);
+
+            // Load and display the map
+            Promise.all([
+                d3.json("https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json"),
+                d3.json("https://raw.githubusercontent.com/codeforamerica/click_that_hood/master/public/data/canada.geojson")
+            ]).then(function([us, canada]) {
+                // Draw US states
+                mapGroup.append("g")
+                    .selectAll("path")
+                    .data(topojson.feature(us, us.objects.states).features)
+                    .enter().append("path")
+                    .attr("class", "state")
+                    .attr("d", path)
+                    .attr("fill", function(d) {
+                        const stateName = getStateName(d.id);
+                        const data = skillGamingData[stateName];
+                        return data ? getColor(data.score) : "#ccc";
+                    })
+                    .on("mouseover", function(event, d) {
+                        const stateName = getStateName(d.id);
+                        const data = skillGamingData[stateName];
+                        
+                        if (data) {
+                            const content = `
+                                <h3>${stateName}</h3>
+                                <div class="score">Score: ${data.score}/5</div>
+                                <div><strong>Status:</strong> ${data.allowed}</div>
+                                <div><strong>Types:</strong> ${data.types}</div>
+                                <div><strong>Precedent:</strong> ${data.precedent}</div>
+                                <div><strong>Notes:</strong> ${data.notes}</div>
+                            `;
+                            positionTooltip(tooltip, event, content);
+                        }
+                    })
+                    .on("mousemove", function(event) {
+                        // Update position on mouse move for better tracking
+                        if (tooltip.style("display") !== "none") {
+                            const currentContent = tooltip.html();
+                            positionTooltip(tooltip, event, currentContent);
+                        }
+                    })
+                    .on("mouseout", function() {
+                        tooltip.style("display", "none");
+                    });
+
+                // Draw Canadian provinces
+                drawCanadianProvinces(mapGroup, canada, path, tooltip);
+                
+                // Add zoom control functionality
+                addZoomControls(svg, zoom);
+            }).catch(error => {
+                console.error("Error loading map data:", error);
+                d3.select("#map").html(`
+                    <div class="loading">
+                        <p>Error loading map data. Please check your internet connection.</p>
+                        <p>Falling back to text-based display...</p>
+                    </div>
+                `);
+                showFallbackDisplay();
+            });
+        }
+
+        function addZoomControls(svg, zoom) {
+            // Zoom in button
+            d3.select("#zoom-in").on("click", function() {
+                svg.transition().duration(300).call(
+                    zoom.scaleBy, 1.5
+                );
+            });
+
+            // Zoom out button  
+            d3.select("#zoom-out").on("click", function() {
+                svg.transition().duration(300).call(
+                    zoom.scaleBy, 1 / 1.5
+                );
+            });
+
+            // Reset zoom button
+            d3.select("#zoom-reset").on("click", function() {
+                svg.transition().duration(500).call(
+                    zoom.transform,
+                    d3.zoomIdentity
+                );
+            });
+        }
+
+        function drawCanadianProvinces(mapGroup, canada, path, tooltip) {
+            // Canadian province name mapping for the GeoJSON data
+            const provinceNameMap = {
+                "British Columbia": "British Columbia",
+                "Alberta": "Alberta",
+                "Saskatchewan": "Saskatchewan", 
+                "Manitoba": "Manitoba",
+                "Ontario": "Ontario",
+                "Québec": "Quebec", // Note: GeoJSON might use French name
+                "Quebec": "Quebec",
+                "New Brunswick": "New Brunswick",
+                "Nova Scotia": "Nova Scotia",
+                "Prince Edward Island": "Prince Edward Island",
+                "Newfoundland and Labrador": "Newfoundland and Labrador",
+                "Yukon Territory": "Yukon",
+                "Yukon": "Yukon",
+                "Northwest Territories": "Northwest Territories",
+                "Nunavut": "Nunavut"
+            };
+
+            // Draw Canadian provinces
+            mapGroup.append("g")
+                .selectAll("path")
+                .data(canada.features)
+                .enter().append("path")
+                .attr("class", "province")
+                .attr("d", path)
+                .attr("fill", function(d) {
+                    // Try different property names that might contain the province name
+                    const provinceName = d.properties.NAME || d.properties.name || d.properties.PRENAME || d.properties.NAME_EN;
+                    const mappedName = provinceNameMap[provinceName];
+                    const data = skillGamingData[mappedName];
+                    return data ? getColor(data.score) : "#ccc";
+                })
+                .attr("stroke", "#fff")
+                .attr("stroke-width", 1)
+                .on("mouseover", function(event, d) {
+                    const provinceName = d.properties.NAME || d.properties.name || d.properties.PRENAME || d.properties.NAME_EN;
+                    const mappedName = provinceNameMap[provinceName];
+                    const data = skillGamingData[mappedName];
+                    
+                    let content;
+                    if (data) {
+                        content = `
+                            <h3>${mappedName}</h3>
+                            <div class="score">Score: ${data.score}/5</div>
+                            <div><strong>Status:</strong> ${data.allowed}</div>
+                            <div><strong>Types:</strong> ${data.types}</div>
+                            <div><strong>Precedent:</strong> ${data.precedent}</div>
+                            <div><strong>Notes:</strong> ${data.notes}</div>
+                        `;
+                    } else {
+                        // Fallback for unmapped provinces
+                        content = `
+                            <h3>${provinceName}</h3>
+                            <div>Province data not available</div>
+                        `;
+                    }
+                    positionTooltip(tooltip, event, content);
+                })
+                .on("mousemove", function(event) {
+                    // Update position on mouse move for better tracking
+                    if (tooltip.style("display") !== "none") {
+                        const currentContent = tooltip.html();
+                        positionTooltip(tooltip, event, currentContent);
+                    }
+                })
+                .on("mouseout", function() {
+                    tooltip.style("display", "none");
+                });
+        }
+
+        function showFallbackDisplay() {
+            // Create a table-based fallback
+            let html = "<div class='loading'><h3>Skill Gaming Scores by Jurisdiction</h3><table border='1' style='width:100%; border-collapse: collapse;'>";
+            html += "<tr><th>Jurisdiction</th><th>Score</th><th>Status</th><th>Notes</th></tr>";
+            
+            Object.keys(skillGamingData).forEach(jurisdiction => {
+                const data = skillGamingData[jurisdiction];
+                const color = getColor(data.score);
+                html += `<tr style='background-color: ${color}'>`;
+                html += `<td>${jurisdiction}</td>`;
+                html += `<td>${data.score}/5</td>`;
+                html += `<td>${data.allowed}</td>`;
+                html += `<td>${data.notes.substring(0, 100)}...</td>`;
+                html += "</tr>";
+            });
+            html += "</table></div>";
+            
+            d3.select("#map").html(html);
+        }
+
+        // US State ID to name mapping
+        function getStateName(id) {
+            const stateNames = {
+                "01": "Alabama", "02": "Alaska", "04": "Arizona", "05": "Arkansas",
+                "06": "California", "08": "Colorado", "09": "Connecticut", "10": "Delaware",
+                "11": "District of Columbia", "12": "Florida", "13": "Georgia", "15": "Hawaii",
+                "16": "Idaho", "17": "Illinois", "18": "Indiana", "19": "Iowa",
+                "20": "Kansas", "21": "Kentucky", "22": "Louisiana", "23": "Maine",
+                "24": "Maryland", "25": "Massachusetts", "26": "Michigan", "27": "Minnesota",
+                "28": "Mississippi", "29": "Missouri", "30": "Montana", "31": "Nebraska",
+                "32": "Nevada", "33": "New Hampshire", "34": "New Jersey", "35": "New Mexico",
+                "36": "New York", "37": "North Carolina", "38": "North Dakota", "39": "Ohio",
+                "40": "Oklahoma", "41": "Oregon", "42": "Pennsylvania", "44": "Rhode Island",
+                "45": "South Carolina", "46": "South Dakota", "47": "Tennessee", "48": "Texas",
+                "49": "Utah", "50": "Vermont", "51": "Virginia", "53": "Washington",
+                "54": "West Virginia", "55": "Wisconsin", "56": "Wyoming"
+            };
+            return stateNames[id.toString().padStart(2, '0')];
+        }
+
+        // Simple tooltip positioning function
+        function positionTooltip(tooltip, event, content) {
+            tooltip.html(content);
+            
+            const containerRect = document.querySelector('.map-container').getBoundingClientRect();
+            const mouseX = event.clientX;
+            const mouseY = event.clientY;
+            
+            // Simple logic: above mouse if in bottom half, below if in top half
+            const containerMidY = containerRect.top + containerRect.height / 2;
+            
+            let x, y, position;
+            
+            if (mouseY > containerMidY) {
+                // Bottom half of screen - show tooltip above mouse
+                position = 'top';
+                y = mouseY - 220; // Offset to show above
+                x = mouseX - 150; // Center on mouse
+            } else {
+                // Top half of screen - show tooltip below mouse
+                position = 'bottom';
+                y = mouseY + 15; // Offset to show below
+                x = mouseX - 150; // Center on mouse
+            }
+            
+            // Keep tooltip within container bounds
+            x = Math.max(containerRect.left + 10, 
+                Math.min(x, containerRect.right - 310));
+            
+            // Clear existing position classes and add new one
+            tooltip.attr('class', 'tooltip position-' + position);
+            
+            // Position tooltip
+            tooltip.style("left", x + "px")
+                   .style("top", y + "px")
+                   .style("display", "block");
+        }
+
+        // Initialize the map
+        createMap();
+    </script>
+</body>
+</html>

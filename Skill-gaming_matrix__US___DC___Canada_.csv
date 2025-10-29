@@ -1,0 +1,65 @@
+jurisdiction,country,region_type,skill_gaming_allowed,capacity_score_0to5,permitted_types_summary,operator_precedent,important_notes
+Alberta,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+British Columbia,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Manitoba,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+New Brunswick,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Newfoundland and Labrador,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Nova Scotia,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Ontario,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Prince Edward Island,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Quebec,Canada,Province,Yes (pure-skill contests),4.0,Pure-skill only; no internal RNG,yes,"Pure-skill allowed. Distinct requirements: French-language obligations for websites, UX, customer service, ads; stronger enforcement (Bill 96/Law 14). Québec repealed publicity‑contest registration regime (effective Oct 27, 2023), reducing contest admin, but language/consumer rules still apply."
+Saskatchewan,Canada,Province,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Northwest Territories,Canada,Territory,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Nunavut,Canada,Territory,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+Yukon,Canada,Territory,Yes (pure-skill contests),4.5,Pure-skill only; no internal RNG,yes,"In Canada, pure-skill contests are generally outside Criminal Code gambling; any internal chance = mixed chance & skill (regulated). Apply provincial consumer‑protection & marketing rules."
+District of Columbia,US,District,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Not listed as restricted by major operators; follow general consumer and skill-proof standards.
+Alabama,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Alaska,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Arizona,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG; some tourney formats limited,partial,No Mega Events or FPUE tournaments (operator policy).
+Arkansas,US,State,No (cash skill tourneys blocked online/mobile),0.0,N/A,no,Flagged as restricted by major operators for online/mobile cash skill tournaments.
+California,US,State,Yes (pure-skill cash contests),3.0,H2H & tournaments; no chance/RNG,yes,DFS/picks opinions create caution for sports formats; non‑sports pure‑skill contests generally separated from gambling statutes. Avoid DFS-like offerings.
+Colorado,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Connecticut,US,State,No (cash skill tourneys blocked online/mobile),0.0,N/A,no,Flagged as restricted by major operators for online/mobile cash skill tournaments.
+Delaware,US,State,No (cash skill tourneys blocked online/mobile),0.0,N/A,no,Flagged as restricted by major operators for online/mobile cash skill tournaments.
+Florida,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG; some tourney formats limited,partial,No Mega Events or FPUE tournaments (operator policy).
+Georgia,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Hawaii,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Idaho,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Illinois,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Indiana,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG; no card/tiles cash,partial,Cash play not available for card-style games (operator policy).
+Iowa,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Kansas,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Kentucky,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Louisiana,US,State,No (cash skill tourneys blocked online/mobile),0.0,N/A,no,Flagged as restricted by major operators for online/mobile cash skill tournaments.
+Maine,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG; no card/tiles cash,partial,Cash play not available for card-style games (operator policy).
+Maryland,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Massachusetts,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Michigan,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Minnesota,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Mississippi,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Missouri,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Montana,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Nebraska,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Nevada,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+New Hampshire,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+New Jersey,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG; no dominoes cash,partial,Cash dominoes not available (operator policy).
+New Mexico,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+New York,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+North Carolina,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+North Dakota,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Ohio,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Oklahoma,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Oregon,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Pennsylvania,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Rhode Island,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+South Carolina,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+South Dakota,US,State,No (cash skill tourneys blocked online/mobile),0.0,N/A,no,Flagged as restricted by major operators for online/mobile cash skill tournaments.
+Tennessee,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Texas,US,State,Yes (pure-skill cash contests),3.0,H2H & tournaments; no chance/RNG,yes,DFS/picks opinions create caution for sports formats; non‑sports pure‑skill contests generally separated from gambling statutes. Avoid DFS-like offerings.
+Utah,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Vermont,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Virginia,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Washington,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+West Virginia,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Wisconsin,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
+Wyoming,US,State,Yes (pure-skill cash contests),4.0,H2H & tournaments; no chance/RNG,yes,Ensure games are demonstrably skill-predominant; remove internal chance.
