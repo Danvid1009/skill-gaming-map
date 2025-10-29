@@ -639,8 +639,9 @@
                         }
                     })
                     .on("mousemove", function(event) {
-                        // Update position on mouse move for better tracking
-                        if (tooltip.style("display") !== "none") {
+                        // Only update position on desktop, not mobile
+                        const isMobile = window.innerWidth <= 768;
+                        if (!isMobile && tooltip.style("display") !== "none") {
                             const currentContent = tooltip.html();
                             positionTooltip(tooltip, event, currentContent);
                         }
@@ -654,6 +655,9 @@
                 
                 // Add zoom control functionality
                 addZoomControls(svg, zoom);
+                
+                // Add mobile tooltip dismissal
+                addMobileTooltipDismissal(svg, tooltip);
             }).catch(error => {
                 console.error("Error loading map data:", error);
                 d3.select("#map").html(`
@@ -687,6 +691,16 @@
                     zoom.transform,
                     d3.zoomIdentity
                 );
+            });
+        }
+
+        function addMobileTooltipDismissal(svg, tooltip) {
+            // On mobile, allow tapping elsewhere to hide tooltip
+            svg.on("click", function(event) {
+                const isMobile = window.innerWidth <= 768;
+                if (isMobile && !event.target.closest('.state, .province')) {
+                    tooltip.style("display", "none");
+                }
             });
         }
 
@@ -764,8 +778,9 @@
                     positionTooltip(tooltip, event, content);
                 })
                 .on("mousemove", function(event) {
-                    // Update position on mouse move for better tracking
-                    if (tooltip.style("display") !== "none") {
+                    // Only update position on desktop, not mobile
+                    const isMobile = window.innerWidth <= 768;
+                    if (!isMobile && tooltip.style("display") !== "none") {
                         const currentContent = tooltip.html();
                         positionTooltip(tooltip, event, currentContent);
                     }
@@ -826,29 +841,46 @@
             // Check if mobile
             const isMobile = window.innerWidth <= 768;
             
-            // Simple logic: above mouse if in bottom half, below if in top half
-            const containerMidY = containerRect.top + containerRect.height / 2;
-            
             let x, y, position;
             let tooltipWidth = isMobile ? 200 : 300;
-            let yOffset = isMobile ? 120 : 220;
-            let centerOffset = isMobile ? 100 : 150;
             
-            if (mouseY > containerMidY) {
-                // Bottom half of screen - show tooltip above mouse
-                position = 'top';
-                y = mouseY - yOffset; // Smaller offset for mobile
-                x = mouseX - centerOffset; // Center on mouse
-            } else {
-                // Top half of screen - show tooltip below mouse
+            if (isMobile) {
+                // Mobile: Show tooltip exactly at tap location
                 position = 'bottom';
-                y = mouseY + 15; // Offset to show below
-                x = mouseX - centerOffset; // Center on mouse
+                x = mouseX - (tooltipWidth / 2); // Center tooltip on tap
+                y = mouseY + 10; // Small offset below tap point
+                
+                // Keep tooltip within container bounds
+                x = Math.max(containerRect.left + 5, 
+                    Math.min(x, containerRect.right - tooltipWidth - 5));
+                    
+                // If tooltip would go off bottom of screen, show above tap
+                if (y + 150 > containerRect.bottom) {
+                    y = mouseY - 130; // Show above tap
+                    position = 'top';
+                }
+            } else {
+                // Desktop: Use the existing logic
+                const containerMidY = containerRect.top + containerRect.height / 2;
+                let yOffset = 220;
+                let centerOffset = 150;
+                
+                if (mouseY > containerMidY) {
+                    // Bottom half of screen - show tooltip above mouse
+                    position = 'top';
+                    y = mouseY - yOffset;
+                    x = mouseX - centerOffset;
+                } else {
+                    // Top half of screen - show tooltip below mouse
+                    position = 'bottom';
+                    y = mouseY + 15;
+                    x = mouseX - centerOffset;
+                }
+                
+                // Keep tooltip within container bounds
+                x = Math.max(containerRect.left + 10, 
+                    Math.min(x, containerRect.right - tooltipWidth - 10));
             }
-            
-            // Keep tooltip within container bounds
-            x = Math.max(containerRect.left + 10, 
-                Math.min(x, containerRect.right - tooltipWidth - 10));
             
             // Clear existing position classes and add new one
             tooltip.attr('class', 'tooltip position-' + position);
