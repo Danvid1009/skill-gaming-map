@@ -47,14 +47,24 @@
         
         /* Mobile responsive adjustments */
         @media (max-width: 768px) {
+            body {
+                margin: 0;
+                padding: 0;
+                background-color: #f8f9fa;  /* Slightly different mobile bg */
+            }
+            
             .container {
                 padding: 8px;
                 margin: 0;
+                border-radius: 0;           /* Remove border radius on mobile */
+                box-shadow: none;           /* Remove shadow on mobile */
+                background: white;
+                min-height: 100vh;          /* Full height on mobile */
             }
             
             .map-container {
-                height: calc(100vh - 160px);
-                min-height: 400px;
+                height: calc(100vh - 200px);
+                min-height: 300px;
                 border-radius: 4px;
                 border-width: 1px;
             }
@@ -77,12 +87,13 @@
         
         @media (max-width: 480px) {
             .container {
-                padding: 5px;
+                padding: 4px;
+                min-height: 100vh;
             }
             
             .map-container {
-                height: calc(100vh - 140px);
-                min-height: 350px;
+                height: calc(100vh - 180px);
+                min-height: 280px;
             }
             
             h1 {
@@ -100,19 +111,19 @@
             }
             
             .info-panel {
-                padding: 8px;
-                margin-top: 10px;
+                padding: 10px;
+                margin-top: 15px;
             }
             
             .info-panel h3 {
-                font-size: 14px;
-                margin-bottom: 6px;
+                font-size: 16px;
+                margin-bottom: 8px;
             }
             
             .info-panel p {
-                font-size: 11px;
-                margin-bottom: 6px;
-                line-height: 1.25;
+                font-size: 12px;
+                margin-bottom: 8px;
+                line-height: 1.3;
             }
         }
         
@@ -265,16 +276,40 @@
             z-index: 1001;
         }
         
-        /* Mobile legend adjustments - move to top left and make compact */
+        /* Mobile legend adjustments */
         @media (max-width: 768px) {
             .legend {
-                top: 10px;
-                left: 10px;
-                bottom: auto;
+                top: 10px;        /* Move to top */
+                left: 10px;       /* Keep on left */
+                bottom: auto;     /* Remove bottom positioning */
+                padding: 8px;
+                font-size: 10px;
+                max-width: 140px;
+            }
+            
+            .legend h4 {
+                font-size: 11px;
+                margin-bottom: 6px;
+            }
+            
+            .legend-gradient {
+                width: 100px;
+                height: 10px;
+            }
+            
+            .legend-labels {
+                width: 100px;
+                font-size: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .legend {
+                top: 5px;
+                left: 5px;
                 padding: 6px;
                 font-size: 9px;
-                background: rgba(255, 255, 255, 0.95);
-                max-width: 140px;
+                max-width: 120px;
             }
             
             .legend h4 {
@@ -290,11 +325,6 @@
             .legend-labels {
                 width: 80px;
                 font-size: 7px;
-            }
-            
-            .legend div {
-                margin-bottom: 2px;
-                font-size: 8px;
             }
         }
         
@@ -373,16 +403,37 @@
         /* Mobile zoom controls */
         @media (max-width: 768px) {
             .zoom-controls {
+                top: 15px;
+                right: 15px;
+                gap: 4px;
+            }
+            
+            .zoom-btn {
+                width: 44px;        /* Better touch target */
+                height: 44px;       /* Apple/Google recommended 44px minimum */
+                font-size: 22px;
+                background: rgba(255, 255, 255, 0.95);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+                border-radius: 6px;  /* More modern mobile feel */
+            }
+            
+            .zoom-btn:active {
+                transform: scale(0.95);  /* Native mobile tap feedback */
+                background: rgba(240, 240, 240, 0.95);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .zoom-controls {
                 top: 10px;
                 right: 10px;
                 gap: 3px;
             }
             
             .zoom-btn {
-                width: 40px;
-                height: 40px;
+                width: 42px;
+                height: 42px;
                 font-size: 20px;
-                background: rgba(255, 255, 255, 0.9);
             }
         }
         
@@ -424,22 +475,22 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
         
-        /* Mobile logo adjustments - legend now in top-left */
+        /* Mobile logo adjustments */
         @media (max-width: 768px) {
             .bottom-right-logo {
-                bottom: 10px; /* Back to bottom since legend moved to top */
+                bottom: 15px;    /* Back to bottom since legend moved to top */
                 right: 10px;
-                max-height: 35px;
-                max-width: 70px;
+                max-height: 45px;
+                max-width: 90px;
             }
         }
         
         @media (max-width: 480px) {
             .bottom-right-logo {
-                bottom: 8px;
+                bottom: 10px;
                 right: 8px;
-                max-height: 30px;
-                max-width: 60px;
+                max-height: 40px;
+                max-width: 80px;
             }
         }
     </style>
@@ -590,12 +641,35 @@
 
             const tooltip = d3.select("#tooltip");
 
+            // Responsive projection scaling
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            let scale, translateX, translateY;
+            
+            if (isSmallMobile) {
+                // Small mobile: bigger scale, better centering
+                scale = 900;
+                translateX = width / 2;
+                translateY = height / 2 + 20; // Slight downward adjustment
+            } else if (isMobile) {
+                // Tablet/mobile: medium scale
+                scale = 800;
+                translateX = width / 2;
+                translateY = height / 2 + 10;
+            } else {
+                // Desktop: original scale
+                scale = 650;
+                translateX = width / 2;
+                translateY = height / 2;
+            }
+
             // North America projection that includes both US and Canada
             const projection = d3.geoAlbers()
                 .center([0, 54])
                 .rotate([106, 0])
-                .scale(650)
-                .translate([width / 2, height / 2]);
+                .scale(scale)
+                .translate([translateX, translateY]);
 
             const path = d3.geoPath().projection(projection);
 
