@@ -197,47 +197,69 @@
         /* Mobile tooltip optimizations */
         @media (max-width: 768px) {
             .tooltip {
-                max-width: 200px;
-                font-size: 10px;
-                padding: 8px;
-                line-height: 1.2;
-            }
-            
-            .tooltip h3 {
-                font-size: 12px;
-                margin-bottom: 4px;
-            }
-            
-            .tooltip .score {
-                font-size: 13px;
-                margin: 3px 0;
-            }
-            
-            .tooltip div {
-                margin-bottom: 2px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .tooltip {
-                max-width: 180px;
+                max-width: 85vw;
+                width: 85vw;
                 font-size: 9px;
-                padding: 6px;
-                line-height: 1.1;
+                padding: 8px;
+                line-height: 1.3;
+                max-height: 80vh;
+                overflow-y: auto;
             }
             
             .tooltip h3 {
                 font-size: 11px;
                 margin-bottom: 3px;
+                font-weight: bold;
             }
             
             .tooltip .score {
-                font-size: 12px;
+                font-size: 11px;
                 margin: 2px 0;
+                font-weight: bold;
+            }
+            
+            .tooltip div {
+                margin-bottom: 2px;
+                font-size: 9px;
+            }
+            
+            .tooltip strong {
+                font-size: 9px;
+                font-weight: bold;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .tooltip {
+                max-width: 90vw;
+                width: 90vw;
+                font-size: 8px;
+                padding: 6px;
+                line-height: 1.2;
+                max-height: 85vh;
+                overflow-y: auto;
+            }
+            
+            .tooltip h3 {
+                font-size: 10px;
+                margin-bottom: 2px;
+                font-weight: bold;
+            }
+            
+            .tooltip .score {
+                font-size: 10px;
+                margin: 2px 0;
+                font-weight: bold;
             }
             
             .tooltip div {
                 margin-bottom: 1px;
+                font-size: 8px;
+            }
+            
+            .tooltip strong {
+                font-size: 8px;
+                font-weight: bold;
             }
         }
         
@@ -634,12 +656,14 @@
                             
                             let content;
                             if (isMobile) {
-                                // Compact mobile version
+                                // Full mobile version with all data
                                 content = `
                                     <h3>${stateName}</h3>
-                                    <div class="score">${data.score}/5</div>
-                                    <div>${data.allowed}</div>
-                                    <div>${data.types}</div>
+                                    <div class="score">Score: ${data.score}/5</div>
+                                    <div><strong>Status:</strong> ${data.allowed}</div>
+                                    <div><strong>Types:</strong> ${data.types}</div>
+                                    <div><strong>Precedent:</strong> ${data.precedent}</div>
+                                    <div><strong>Summary:</strong> ${data.summary}</div>
                                 `;
                             } else {
                                 // Full desktop version
@@ -664,7 +688,31 @@
                         }
                     })
                     .on("mouseout", function() {
-                        tooltip.style("display", "none");
+                        const isMobile = window.innerWidth <= 768;
+                        if (!isMobile) {
+                            tooltip.style("display", "none");
+                        }
+                    })
+                    .on("click", function(event, d) {
+                        // Handle mobile taps
+                        const isMobile = window.innerWidth <= 768;
+                        if (isMobile) {
+                            event.stopPropagation();
+                            const stateName = getStateName(d.id);
+                            const data = skillGamingData[stateName];
+                            
+                            if (data) {
+                                const content = `
+                                    <h3>${stateName}</h3>
+                                    <div class="score">Score: ${data.score}/5</div>
+                                    <div><strong>Status:</strong> ${data.allowed}</div>
+                                    <div><strong>Types:</strong> ${data.types}</div>
+                                    <div><strong>Precedent:</strong> ${data.precedent}</div>
+                                    <div><strong>Summary:</strong> ${data.summary}</div>
+                                `;
+                                positionTooltip(tooltip, event, content);
+                            }
+                        }
                     });
 
                 // Draw Canadian provinces
@@ -767,12 +815,14 @@
                     
                     if (data) {
                         if (isMobile) {
-                            // Compact mobile version
+                            // Full mobile version with all data
                             content = `
                                 <h3>${mappedName}</h3>
-                                <div class="score">${data.score}/5</div>
-                                <div>${data.allowed}</div>
-                                <div>${data.types}</div>
+                                <div class="score">Score: ${data.score}/5</div>
+                                <div><strong>Status:</strong> ${data.allowed}</div>
+                                <div><strong>Types:</strong> ${data.types}</div>
+                                <div><strong>Precedent:</strong> ${data.precedent}</div>
+                                <div><strong>Summary:</strong> ${data.summary}</div>
                             `;
                         } else {
                             // Full desktop version
@@ -803,7 +853,32 @@
                     }
                 })
                 .on("mouseout", function() {
-                    tooltip.style("display", "none");
+                    const isMobile = window.innerWidth <= 768;
+                    if (!isMobile) {
+                        tooltip.style("display", "none");
+                    }
+                })
+                .on("click", function(event, d) {
+                    // Handle mobile taps
+                    const isMobile = window.innerWidth <= 768;
+                    if (isMobile) {
+                        event.stopPropagation();
+                        const provinceName = d.properties.NAME || d.properties.name || d.properties.PRENAME || d.properties.NAME_EN;
+                        const mappedName = provinceNameMap[provinceName];
+                        const data = skillGamingData[mappedName];
+                        
+                        if (data) {
+                            const content = `
+                                <h3>${mappedName}</h3>
+                                <div class="score">Score: ${data.score}/5</div>
+                                <div><strong>Status:</strong> ${data.allowed}</div>
+                                <div><strong>Types:</strong> ${data.types}</div>
+                                <div><strong>Precedent:</strong> ${data.precedent}</div>
+                                <div><strong>Summary:</strong> ${data.summary}</div>
+                            `;
+                            positionTooltip(tooltip, event, content);
+                        }
+                    }
                 });
         }
 
@@ -859,22 +934,28 @@
             const isMobile = window.innerWidth <= 768;
             
             let x, y, position;
-            let tooltipWidth = isMobile ? 200 : 300;
+            let tooltipWidth = isMobile ? Math.min(window.innerWidth * 0.85, 320) : 300;
             
             if (isMobile) {
-                // Mobile: Show tooltip exactly at tap location
+                // Mobile: Show tooltip centered on screen, vertically centered or slightly above tap
                 position = 'bottom';
-                x = mouseX - (tooltipWidth / 2); // Center tooltip on tap
-                y = mouseY + 10; // Small offset below tap point
+                x = (containerRect.left + containerRect.right) / 2 - tooltipWidth / 2; // Center horizontally
+                y = mouseY - 150; // Position above tap point to show full tooltip
                 
-                // Keep tooltip within container bounds
+                // Keep tooltip within container bounds horizontally
                 x = Math.max(containerRect.left + 5, 
                     Math.min(x, containerRect.right - tooltipWidth - 5));
-                    
-                // If tooltip would go off bottom of screen, show above tap
-                if (y + 120 > containerRect.bottom) {
-                    y = mouseY - 130; // Show above tap
-                    position = 'top';
+                
+                // If tooltip would go off top, position it below tap
+                if (y < containerRect.top + 10) {
+                    y = mouseY + 15; // Show below tap
+                    position = 'bottom';
+                }
+                
+                // If tooltip would go off bottom, adjust upward
+                const tooltipHeight = isMobile ? 250 : 150; // Estimate for mobile with all content
+                if (y + tooltipHeight > containerRect.bottom - 10) {
+                    y = containerRect.bottom - tooltipHeight - 10;
                 }
             } else {
                 // Desktop: Use the existing logic
